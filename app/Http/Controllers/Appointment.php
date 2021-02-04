@@ -52,26 +52,14 @@ class Appointment extends Controller
 
     public function save(Request $request)
     {
-        // return $request->validate([
-        //     'clnt_nme' => 'required|max:100',
-        // ]);
-
-        $mil_time = '23:59';
-        $cntrl_no = DB::table('c_appointm')
-            ->max('cntrl_no');
-
-        if (is_null($cntrl_no)){
-            $cntrl_no=0;
-        }
-
-        $cntrl_no++;
         $log_time ='11:23:58';
+        $cntrl_no = $this->max_cntrl_no ();
 
         DB::table('c_appointm')
             ->insert([
                 'cntrl_no' => $cntrl_no,
-                'log_date' => Carbon::now(),
-                'log_time' => $log_time,
+                'log_date' => Carbon::now('GMT+8'),
+                'log_time' => Carbon::now('GMT+8')->isoFormat('HH:mm'),
                 'clnt_nme' => $request->clnt_nme,
                 'apnt_dte' => $request->apnt_dte,
                 'mil_time' => $request->apnt_tme,
@@ -82,5 +70,17 @@ class Appointment extends Controller
                 'cel_numb' => $request->cel_numb
         ]);
 
+    }
+    public function max_cntrl_no ()
+    {
+        $cntrl_no = DB::table('c_appointm')
+            ->max('cntrl_no');
+
+        if (is_null($cntrl_no)){
+            $cntrl_no=0;
+        }
+
+        $cntrl_no++;
+        return $cntrl_no;
     }
 }
